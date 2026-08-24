@@ -2,7 +2,7 @@
 This mod allows Horse Magnifier: The Full Horse to be randomized with Archipelago.<br/>
 <br/>
 Items to receive include the 10 different lenses, the apple, the horsefly swatter, and an added horse macguffin to unlock the last level.<br/>
-Locations to check include beating and (optionaly) perfecting each level.
+Locations to check include beating and (optionally) perfecting each level.
 
 # Setup
 You will need:<br/>
