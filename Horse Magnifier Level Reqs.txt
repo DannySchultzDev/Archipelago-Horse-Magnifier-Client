@@ -1,0 +1,65 @@
+Items:
+Magnifier: Blue, zooms in
+Shrinker: Red, zooms out
+Flipper: Green, flips image on the x or y axis
+Widener: Purple, zooms in on the x or y axis
+Shortener: Yellow, zooms out on the x or y axis
+Twister: Turquois, rotates based on the distance from the center
+Painter: Black, changes the color of the horse
+Swapper: Blue and Orange, swaps one with the other
+Duplicator: Pink, what is shown in another view (can be either another type of view or another duplicator), is shown in the rest
+
+01: Magnifier
+02: Magnifier
+03: Magnifier
+04: Magnifier, Shrinker
+05: Magnifier
+06: Magnifier, Shrinker
+07: Magnifier, Shrinker
+08: Magnifier, Shrinker
+09: Magnifier, Shrinker
+10: Magnifier, Shrinker
+11: Magnifier, Shrinker
+12: Magnifier
+13: Magnifier (Parry Horse)
+14: Flipper
+15: Magnifier, Shrinker, Flipper
+16: Magnifier, Flipper
+17: Shrinker, Flipper
+18: Magnifier, Flipper
+19: X-Ray, Apple (Scan Horse)
+20: Widener, Shortener
+21: Magnifier, Shrinker, Widener
+22: Widener, Shortener
+23: Magnifier, Flipper, Shortener
+24: Shrinker, Shortener
+25: Twister
+26: Twister
+27: Flipper, Twister
+28: Shrinker, Twister
+29: Painter
+30: Magnifier, Shortener, Twister
+31: Twister
+32: Flipper, Twister
+33: Painter
+34: Magnifier, Shortener, Twister
+35: Shortener, Twister
+36: Shrinker, Twister
+37: Painter
+38: Apple (Hungry Horse)
+39: Swapper
+40: Swapper
+41: Magnifier, Twister, Swapper
+42: Swapper
+43: Swapper
+44: Magnifier, Flipper, Duplicator
+45: Duplicator
+46: Duplicator
+47: Shortener, Duplicator
+48: Magnifier, Fly Swatter (Fly Horse)
+49: Flipper, Twister, Duplicator
+50: Flipper, Twister, Duplicator
+51: Magnifier, Flipper, Duplicator
+52: Shrinker, Flipper, Twister, Duplicator
+53: Shrinker, Flipper, Duplicator
+54: Magnifier, Shrinker, Widener, Shortener, Twister, Duplicator
