@@ -20,6 +20,15 @@ var main_menu_unlocks: Dictionary
 
 func _process(delta: float) -> void:
 	if Archipelago.is_ap_connected():
+		if int(Archipelago.conn.slot_data["deathlink"]) != 0:
+			if not Archipelago.AP_GAME_TAGS.has("DeathLink"):
+				Archipelago.AP_GAME_TAGS.append("DeathLink")
+				Archipelago._update_tags()
+		else:
+			if Archipelago.AP_GAME_TAGS.has("DeathLink"):
+				Archipelago.AP_GAME_TAGS.erase("DeathLink")
+				Archipelago._update_tags()
+
 		for unlock in main_menu_unlocks:
 			main_menu_unlocks[unlock].visible = true
 			if unlock == "Items Panel":
@@ -325,7 +334,7 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 		utils.escape(
 [=[	version_label.text = "v%s%s" % [Platform.VERSION, " (debug)" if Platform.DEBUG else ""]]=]),
 		utils.escape(
-[[	version_label.text = "Archipelago Horse Magnifier Client Ver 0.0.1"
+[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.0.0"
 	print("AP version updated")]], true)
 	)
 end)
@@ -408,6 +417,17 @@ GDPatch.patch_script_as_text("res://scenes/levels/levels/feed_level.gdc", functi
 				apple_unlocked = true
 				break
 	if spawned > 3 and randf() < 0.2 and apple_unlocked:]], true)
+	)
+end)
+
+GDPatch.patch_script_as_text("res://scenes/levels/levels/feed_level.gdc", function(ctx, src)
+	return src:gsub(
+		utils.escape(
+[[	%BigExplosion.visible = true]]),
+		utils.escape(
+[[	%BigExplosion.visible = true
+	if Archipelago.is_ap_connected() and Archipelago.conn.slot_data["deathlink"] != 0:
+		Archipelago.conn.send_deathlink("How Houngry?")]], true)
 	)
 end)
 
@@ -565,7 +585,7 @@ GDPatch.patch_script_as_text("res://scenes/levels/standard_level.gdc", function(
 }
 
 func show_accuracy_meter(score: int) -> void :
-	if score == 0 and Archipelago.is_ap_connected():
+	if Archipelago.is_ap_connected() and score <= int(Archipelago.conn.slot_data["leniency"]):
 		var level := self as StandardLevel
 		var level_name: String = level.level_path
 		level_name = level_name.split("/")[level_name.split("/").size() - 1]
@@ -628,5 +648,58 @@ GDPatch.patch_script_as_text("res://scenes/levels/levels/final_boss_level.gdc", 
 [[func mega_win() -> void :
 	if Archipelago.is_ap_connected():
 		Archipelago.set_client_status(Archipelago.ClientStatus.CLIENT_GOAL)]], true)
+	)
+end)
+
+GDPatch.patch_script_as_text("res://scenes/ui/pause_menu/pause_menu.gdc", function(ctx, src)
+	return src:gsub(
+		utils.escape(
+[[func _ready() -> void :]]),
+		utils.escape(
+[[func deathlink_grenade(source: String, cause: String, json: Dictionary) -> void:
+	_on_restart_pressed()
+
+func check_for_grenades(item: NetworkItem) -> void:
+	if item.get_name() == "Grenade Trap":
+		_on_restart_pressed()
+
+func _ready() -> void :
+	if Archipelago.is_ap_connected():
+		if int(Archipelago.conn.slot_data["deathlink"]) == 1:
+			Archipelago.conn.deathlink.connect(deathlink_grenade)
+		
+		Archipelago.conn.obtained_item.connect(check_for_grenades)]], true)
+	)
+end)
+
+GDPatch.patch_script_as_text("res://scenes/autoloads/jumpscare.gdc", function(ctx, src)
+	return src:gsub(
+		utils.escape(
+[[func launch(zoom: = true) -> void :]]),
+		utils.escape(
+[[var last_connect: int = Time.get_ticks_usec()
+
+func jumpscare_connect(conn: ConnectionInfo, json: Dictionary) -> void:
+	last_connect = Time.get_ticks_usec()
+	conn.deathlink.connect(deathlink_jumpscare)
+	conn.obtained_item.connect(check_for_jumpscare)
+
+func deathlink_jumpscare(source: String, cause: String, json: Dictionary) -> void:
+	if int(Archipelago.conn.slot_data["deathlink"]) == 2:
+		launch()
+
+func check_for_jumpscare(item: NetworkItem) -> void:
+	# Check to see if the item was less than a second after connecting. This is to make sure the player doesn't get a jumpscare upon connect from receiving all items.
+	# This is a hack, and could lead to race conditions, however if this race condition were to fail, the result would only be a jumpscare, which is a low risk result.
+	if Time.get_ticks_usec() - last_connect < 1000:
+		return
+	if item.get_name() == "Jumpscare Trap":
+		print("Hit Trap")
+		launch()
+
+func _ready() -> void :
+	Archipelago.connected.connect(jumpscare_connect)
+
+func launch(zoom: = true) -> void :]], true)
 	)
 end)
