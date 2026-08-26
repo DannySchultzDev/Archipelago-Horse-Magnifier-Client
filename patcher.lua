@@ -333,65 +333,66 @@ end)
 GDPatch.patch_script_as_text("res://scenes/levels/components/lens.gdc", function(ctx, src)
 	return src:gsub(
 		utils.escape(
-[[func _process(_delta: float) -> void :]]),
+[[		if is_dragging:]]),
 		utils.escape(
-[[func _process(_delta: float) -> void :
-	
-	# Only the player's lenses need to be modified.
-	var can_toggle: bool = true
-	if mode == Mode.GOAL:
-		can_toggle = false
-	
-	if name == "AppleGoal":
-		can_toggle = false
-	
-	if can_toggle:
-		var has_lens: bool = false
+[[	
+		# Only the player's lenses need to be modified.
+		var can_toggle: bool = true
+		if mode == Mode.GOAL:
+			can_toggle = false
 		
-		if Archipelago.is_ap_connected():
-			var lens_type_string
-			match type:
-				Type.FISHEYE:
-					lens_type_string = "Fisheye Lens"
-				Type.ANTIFISHEYE:
-					lens_type_string = "Anti-Fisheye Lens"
-				Type.FLIP:
-					lens_type_string = "Flip Lens"
-				Type.STRETCH:
-					lens_type_string = "Stretch Lens"
-				Type.COMPRESS:
-					lens_type_string = "Compress Lens"
-				Type.SWIRL:
-					lens_type_string = "Swirl Lens"
-				Type.PORTAL_TO:
-					lens_type_string = "Portal Lens"
-				Type.PORTAL_FROM:
-					lens_type_string = "Portal Lens"
-				Type.REPLICATOR:
-					lens_type_string = "Replicator Lens"
-				Type.COLOR:
-					lens_type_string = "Color Lens"
+		if name == "AppleGoal":
+			can_toggle = false
+		
+		if can_toggle:
+			var has_lens: bool = false
 			
-			var has_xray = false
-			var has_apple = false
+			if Archipelago.is_ap_connected():
+				var lens_type_string
+				match type:
+					Type.FISHEYE:
+						lens_type_string = "Fisheye Lens"
+					Type.ANTIFISHEYE:
+						lens_type_string = "Anti-Fisheye Lens"
+					Type.FLIP:
+						lens_type_string = "Flip Lens"
+					Type.STRETCH:
+						lens_type_string = "Stretch Lens"
+					Type.COMPRESS:
+						lens_type_string = "Compress Lens"
+					Type.SWIRL:
+						lens_type_string = "Swirl Lens"
+					Type.PORTAL_TO:
+						lens_type_string = "Portal Lens"
+					Type.PORTAL_FROM:
+						lens_type_string = "Portal Lens"
+					Type.REPLICATOR:
+						lens_type_string = "Replicator Lens"
+					Type.COLOR:
+						lens_type_string = "Color Lens"
+				
+				var has_xray = false
+				var has_apple = false
 
-			for item in Archipelago.conn.received_items:
-				if item.get_name() == lens_type_string:
-					has_lens = true
-				elif item.get_name() == "X-Ray Lens":
-					has_xray = true
-				elif item.get_name() == "Apple":
-					has_apple = true
-					
-			# XRay only exists when XRay lens and Apple are unlocked 
-			if mode_override == 7:
-				has_lens = has_xray and has_apple
-		
-		if has_lens:
-			visible = true
-		else:
-			visible = false
-			return]], true)
+				for item in Archipelago.conn.received_items:
+					if item.get_name() == lens_type_string:
+						has_lens = true
+					elif item.get_name() == "X-Ray Lens":
+						has_xray = true
+					elif item.get_name() == "Apple":
+						has_apple = true
+						
+				# XRay only exists when XRay lens and Apple are unlocked 
+				if mode_override == 7:
+					has_lens = has_xray and has_apple
+			
+			if has_lens:
+				visible = true
+			else:
+				visible = false
+				return
+
+		if is_dragging:]], true)
 	)
 end)
 
