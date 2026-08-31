@@ -334,7 +334,7 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 		utils.escape(
 [=[	version_label.text = "v%s%s" % [Platform.VERSION, " (debug)" if Platform.DEBUG else ""]]=]),
 		utils.escape(
-[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.0.0"
+[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.1.0"
 	print("AP version updated")]], true)
 	)
 end)
@@ -677,10 +677,7 @@ GDPatch.patch_script_as_text("res://scenes/autoloads/jumpscare.gdc", function(ct
 		utils.escape(
 [[func launch(zoom: = true) -> void :]]),
 		utils.escape(
-[[var last_connect: int = Time.get_ticks_usec()
-
-func jumpscare_connect(conn: ConnectionInfo, json: Dictionary) -> void:
-	last_connect = Time.get_ticks_usec()
+[[func jumpscare_connect(conn: ConnectionInfo, json: Dictionary) -> void:
 	conn.deathlink.connect(deathlink_jumpscare)
 	conn.obtained_item.connect(check_for_jumpscare)
 
@@ -689,10 +686,6 @@ func deathlink_jumpscare(source: String, cause: String, json: Dictionary) -> voi
 		launch()
 
 func check_for_jumpscare(item: NetworkItem) -> void:
-	# Check to see if the item was less than a second after connecting. This is to make sure the player doesn't get a jumpscare upon connect from receiving all items.
-	# This is a hack, and could lead to race conditions, however if this race condition were to fail, the result would only be a jumpscare, which is a low risk result.
-	if Time.get_ticks_usec() - last_connect < 1000:
-		return
 	if item.get_name() == "Jumpscare Trap":
 		print("Hit Trap")
 		launch()
@@ -701,5 +694,14 @@ func _ready() -> void :
 	Archipelago.connected.connect(jumpscare_connect)
 
 func launch(zoom: = true) -> void :]], true)
+	)
+end)
+
+GDPatch.patch_script_as_text("res://scenes/ui/main_menu/level_select.gdc", function(ctx, src)
+	return src:gsub(
+		utils.escape(
+[[		button.set_unlocked(SaveData.unlocked_levels[level])]]),
+		utils.escape(
+[[		button.set_unlocked(true)]], true)
 	)
 end)
