@@ -18,7 +18,27 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 var main_menu_controls: Dictionary
 var main_menu_unlocks: Dictionary
 
+var use_horse_font: bool = true
+var hide_password_with_horse = true
+
+var horse_font = load("res://sprites/fonts/pirkkala.ttf")
+var caps_font = load("res://sprites/fonts/Bitty.ttf")
+
 func _process(delta: float) -> void:
+
+	if use_horse_font:
+		main_menu_controls["Connection Textbox"].add_theme_font_override("font", horse_font)
+		main_menu_controls["Slot Name Textbox"].add_theme_font_override("font", horse_font)
+		main_menu_controls["Password Textbox"].add_theme_font_override("font", horse_font)
+	else:
+		main_menu_controls["Connection Textbox"].add_theme_font_override("font", caps_font)
+		main_menu_controls["Slot Name Textbox"].add_theme_font_override("font", caps_font)
+		main_menu_controls["Password Textbox"].add_theme_font_override("font", caps_font)
+
+	main_menu_controls["Password Textbox"].secret_character = "🐎"
+
+	main_menu_controls["Password Textbox"].secret = hide_password_with_horse
+	
 	if Archipelago.is_ap_connected():
 		if int(Archipelago.conn.slot_data["deathlink"]) != 0:
 			if not Archipelago.AP_GAME_TAGS.has("DeathLink"):
@@ -102,7 +122,13 @@ func try_connect() -> void:
 		return
 	
 	file.store_string(connection_ip + "\n" + connection_port + "\n" +
-	main_menu_controls["Slot Name Textbox"].text + "\n" + main_menu_controls["Password Textbox"].text)]], true)
+	main_menu_controls["Slot Name Textbox"].text + "\n" + main_menu_controls["Password Textbox"].text)
+	
+func toggle_use_horse_font() -> void:
+	use_horse_font = !use_horse_font
+	
+func toggle_hide_password_with_horse() -> void:
+	hide_password_with_horse = !hide_password_with_horse]], true)
 	)
 end)
 
@@ -194,6 +220,30 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 	add_child(connect_button)
 	connect_button.pressed.connect(try_connect)
 	main_menu_controls["Connect Button"] = connect_button
+
+	var use_horse_font_atlas := AtlasTexture.new()
+	use_horse_font_atlas.atlas = load("res://sprites/ui/icons/icons-Sheet.png")
+	use_horse_font_atlas.region = Rect2(80, 40, 40, 40)
+
+	var use_horse_font_button = Button.new()
+	use_horse_font_button.position = Vector2(870, 80)
+	use_horse_font_button.size = Vector2(50, 50)
+	use_horse_font_button.icon = use_horse_font_atlas
+	add_child(use_horse_font_button)
+	use_horse_font_button.pressed.connect(toggle_use_horse_font)
+	main_menu_controls["Use Horse Font Button"] = use_horse_font_button
+
+	var hide_password_with_horse_atlas := AtlasTexture.new()
+	hide_password_with_horse_atlas.atlas = load("res://sprites/ui/icons/icons-Sheet.png")
+	hide_password_with_horse_atlas.region = Rect2(0, 40, 40, 40)
+
+	var hide_password_with_horse_button = Button.new()
+	hide_password_with_horse_button.position = Vector2(870, 140)
+	hide_password_with_horse_button.size = Vector2(50, 50)
+	hide_password_with_horse_button.icon = hide_password_with_horse_atlas
+	add_child(hide_password_with_horse_button)
+	hide_password_with_horse_button.pressed.connect(toggle_hide_password_with_horse)
+	main_menu_controls["Hide Password With Horse Button"] = hide_password_with_horse_button
 
 	var items_panel = Panel.new()
 	items_panel.position = Vector2(30, 280)
@@ -334,7 +384,7 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 		utils.escape(
 [=[	version_label.text = "v%s%s" % [Platform.VERSION, " (debug)" if Platform.DEBUG else ""]]=]),
 		utils.escape(
-[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.1.0"
+[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.2.0"
 	print("AP version updated")]], true)
 	)
 end)
@@ -594,6 +644,36 @@ func show_accuracy_meter(score: int) -> void :
 		if standard_level_name_to_perfect_location_id.has(level_name):
 			print("Sending location: " + str(standard_level_name_to_perfect_location_id[level_name]))
 			Archipelago.collect_location(standard_level_name_to_perfect_location_id[level_name])]], true)
+	)
+end)
+
+GDPatch.patch_script_as_text("res://scenes/ui/colorblind_skip_button.gdc", function(ctx, src)
+	return src:gsub(
+		utils.escape(
+[[		visible = Settings.colorblind_mode]]),
+		utils.escape(
+[[		var make_visible := false
+		if Archipelago.is_ap_connected():
+			for item in Archipelago.conn.received_items:
+				if item.get_name() == "Color Lens":
+					make_visible = Settings.colorblind_mode
+		visible = make_visible]], true)
+	)
+end)
+
+GDPatch.patch_script_as_text("res://scenes/ui/colorblind_skip_button.gdc", function(ctx, src)
+	return src:gsub(
+		utils.escape(
+[[	await level.start_win()]]),
+		utils.escape(
+[[	if Archipelago.is_ap_connected():
+		if level.level_path == "res://scenes/levels/levels/green_horse_level1.tscn":
+			Archipelago.collect_location(127)
+		if level.level_path == "res://scenes/levels/levels/green_horse_level2.tscn":
+			Archipelago.collect_location(131)
+		if level.level_path == "res://scenes/levels/levels/green_horse_level3.tscn":
+			Archipelago.collect_location(135)
+	await level.start_win()]], true)
 	)
 end)
 
