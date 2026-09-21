@@ -384,7 +384,7 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 		utils.escape(
 [=[	version_label.text = "v%s%s" % [Platform.VERSION, " (debug)" if Platform.DEBUG else ""]]=]),
 		utils.escape(
-[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.2.0"
+[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.3.0"
 	print("AP version updated")]], true)
 	)
 end)
@@ -757,7 +757,12 @@ GDPatch.patch_script_as_text("res://scenes/autoloads/jumpscare.gdc", function(ct
 		utils.escape(
 [[func launch(zoom: = true) -> void :]]),
 		utils.escape(
-[[func jumpscare_connect(conn: ConnectionInfo, json: Dictionary) -> void:
+[[var communication_layer: Label
+var time_since_last_message: float = 0.0
+var message_queue: Array = []
+var slot_location_cache: Dictionary[int, bool] = {}
+
+func jumpscare_connect(conn: ConnectionInfo, json: Dictionary) -> void:
 	conn.deathlink.connect(deathlink_jumpscare)
 	conn.obtained_item.connect(check_for_jumpscare)
 
@@ -766,12 +771,58 @@ func deathlink_jumpscare(source: String, cause: String, json: Dictionary) -> voi
 		launch()
 
 func check_for_jumpscare(item: NetworkItem) -> void:
+	if item.src_player_id != 0 and item.src_player_id != Archipelago.conn.player_id:
+		message_queue.push_back("Received " + str(item.get_name()) + " from " + str(Archipelago.conn.get_player(item.src_player_id).get_name()))
+
 	if item.get_name() == "Jumpscare Trap":
 		print("Hit Trap")
 		launch()
 
+func scout_found_location(item: NetworkItem):
+	if Archipelago.conn.player_id == item.dest_player_id:
+		message_queue.push_back("Found your " + str(item.get_name()))
+	else:
+		message_queue.push_back("Found " + str(Archipelago.conn.get_player(item.dest_player_id).get_name()) + "'s " + str(item.get_name()))
+
 func _ready() -> void :
+	communication_layer = Label.new()
+	communication_layer.position = Vector2(400, 660)
+	communication_layer.size = Vector2(500, 50)
+	communication_layer.add_theme_color_override("font_color", Color.BLACK)
+	communication_layer.add_theme_font_override("font", load("res://sprites/fonts/pirkkala.ttf"))
+	communication_layer.add_theme_font_size_override("font_size", 25)
+	communication_layer.add_theme_color_override("font_outline_color", Color.WHITE)
+	communication_layer.add_theme_constant_override("outline_size", 8)
+	communication_layer.text = "TEST communication_layer"
+	add_child(communication_layer)
+
 	Archipelago.connected.connect(jumpscare_connect)
+
+func _process(delta: float) -> void:
+	time_since_last_message -= delta
+	if time_since_last_message < 0 and message_queue.size() > 0:
+		communication_layer.modulate.a = 0
+		communication_layer.text = str(message_queue.pop_front())
+		time_since_last_message = 3.0
+	elif time_since_last_message < 0: 
+		time_since_last_message = -1.0
+		communication_layer.modulate.a = 0
+	elif time_since_last_message > 2:
+		communication_layer.modulate.a = 3.0 - time_since_last_message
+	elif time_since_last_message < 1:
+		communication_layer.modulate.a = time_since_last_message
+	else:
+		communication_layer.modulate.a = 1
+
+	if Archipelago.is_ap_connected():
+		for location_id in Archipelago.conn.slot_locations:
+			if not slot_location_cache.has(location_id):
+				slot_location_cache[location_id] = Archipelago.conn.slot_locations[location_id]
+			elif Archipelago.conn.slot_locations[location_id] and not slot_location_cache[location_id]:
+				Archipelago.conn.scout(location_id, 0, scout_found_location)
+
+			slot_location_cache[location_id] = Archipelago.conn.slot_locations[location_id]
+
 
 func launch(zoom: = true) -> void :]], true)
 	)
