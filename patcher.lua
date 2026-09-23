@@ -384,7 +384,7 @@ GDPatch.patch_script_as_text("scenes/ui/main_menu/main_menu.gdc", function(ctx, 
 		utils.escape(
 [=[	version_label.text = "v%s%s" % [Platform.VERSION, " (debug)" if Platform.DEBUG else ""]]=]),
 		utils.escape(
-[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.3.0"
+[[	version_label.text = "Archipelago Horse Magnifier Client Ver 1.3.1"
 	print("AP version updated")]], true)
 	)
 end)
