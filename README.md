@@ -13,6 +13,9 @@ Godot AP (Source Code): https://github.com/EmilyV99/GodotAP/releases<br/>
 The Archipelago Horse Magnifier Client: https://github.com/DannySchultzDev/Archipelago-Horse-Magnifier-Client/releases<br/>
 The Horse Magnifier AP World: https://github.com/DannySchultzDev/Archipelago-Horse-Magnifier-Client/releases<br/>
 <br/>
+Optional:<br/>
+Poptracker: https://github.com/DannySchultzDev/Horse-Magnifier-PopTracker/releases<br/>
+<br/>
 Setting up the AP World:<br/>
 Put the AP World in your custom worlds folder either manually, double clicking it, or using the "Install APWorld" option in the Archipelago Launcher.<br/>
 Generate the options .YAML file by using the "Generate Template Options" option in the Archipelago Launcher.<br/>
