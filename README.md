@@ -31,4 +31,5 @@ Unzip the mod and add it to the newly created mods folder. (The mods folder will
 Add the godot_ap folder to the same directory as the HorseMagnifier.exe (The godot_ap folder is located in the Godot AP source code at GodotAP-0.4.1\GodotAP-0.4.1\godot_ap)<br/>
 Run the game, you should see connection fields at the top of the game.<br/>
 Input your connection information.<br/>
+You can press the T button to the right of the connection fields to change the font to one that displays capital letters. The horse button under it will hide/show the password field.<br/>
 Enjoy!
