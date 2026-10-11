@@ -8,7 +8,7 @@ Locations to check include beating and (optionally) perfecting each level.
 You will need:<br/>
 Horse Magnifier: The Full Horse: https://store.steampowered.com/app/4585340/Horse_Magnifier_The_Full_Horse/<br/>
 Archipelago: https://github.com/ArchipelagoMW/Archipelago/releases<br/>
-GDPatch: https://gdpatch.dev/<br/>
+GDPatch (V0.2.1): https://github.com/GDPatch/GDPatch/releases/tag/v0.2.1<br/>
 Godot AP (Source Code): https://github.com/EmilyV99/GodotAP/releases<br/>
 The Archipelago Horse Magnifier Client: https://github.com/DannySchultzDev/Archipelago-Horse-Magnifier-Client/releases<br/>
 The Horse Magnifier AP World: https://github.com/DannySchultzDev/Archipelago-Horse-Magnifier-Client/releases<br/>
